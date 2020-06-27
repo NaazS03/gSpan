@@ -1,4 +1,4 @@
-# <div align = center>gSpan</div>
+# <div align = center>Enhanced gSpan/closeGraph</div>
 
 ##### For Chinese readme, please go to [README-Chinese](https://github.com/betterenvi/gSpan/blob/master/README-Chinese.md). 
 

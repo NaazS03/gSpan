@@ -36,6 +36,22 @@ class Edge(object):
         self.to = to
         self.elb = elb
 
+    def __eq__(self, other):
+        """Check equivalence of Edges."""
+        if(self is other):
+            return True
+        else:
+            eidMatch = self.eid == other.eid
+            frmMatch = self.frm == other.frm
+            toMatch = self.to == other.to
+            elbMatch = self.elb == other.elb
+
+            return eidMatch and frmMatch and toMatch and elbMatch
+
+    def __ne__(self, other):
+        """Check if not equal."""
+        return not self.__eq__(other)
+
 
 class Vertex(object):
     """Vertex class."""

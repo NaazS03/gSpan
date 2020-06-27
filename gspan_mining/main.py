@@ -7,8 +7,8 @@ from __future__ import print_function
 import os
 import sys
 
-from .config import parser
-from .gspan import gSpan
+from config import parser
+from gspan import gSpan
 
 
 def main(FLAGS=None):

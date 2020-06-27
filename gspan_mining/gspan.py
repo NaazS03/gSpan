@@ -9,10 +9,11 @@ import copy
 import itertools
 import time
 
-from .graph import AUTO_EDGE_ID
-from .graph import Graph
-from .graph import VACANT_GRAPH_ID
-from .graph import VACANT_VERTEX_LABEL
+from graph import AUTO_EDGE_ID
+from graph import Graph
+from graph import VACANT_GRAPH_ID
+from graph import VACANT_VERTEX_LABEL
+from filterSubgraphs import filter_nonmaximal_subgraphs
 
 import pandas as pd
 
@@ -131,6 +132,28 @@ class PDFS(object):
         self.edge = edge
         self.prev = prev
 
+    def __eq__(self, other):
+        """Check equivalence of PDFS."""
+        if(self is None):
+            return other is None
+        elif(other is None):
+            return self is None
+        else:
+            gidMatch = self.gid == other.gid
+            edgeMatch = self.edge == other.edge
+            prevMatch = False
+            if(self.prev is not None):
+                prevMatch = self.prev == other.prev
+            else:
+                if(other.prev is None):
+                    prevMatch = True
+
+            return gidMatch and edgeMatch and prevMatch
+
+    def __ne__(self, other):
+        """Check if not equal."""
+        return not self.__eq__(other)
+
 
 class Projected(list):
     """Projected is a list of PDFS.
@@ -206,6 +229,7 @@ class gSpan(object):
         # Include subgraphs with
         # any num(but >= 2, <= max_num_vertices) of vertices.
         self._frequent_subgraphs = list()
+        self._projected_frequent_subgraphs = list()
         self._counter = itertools.count()
         self._verbose = verbose
         self._visualize = visualize
@@ -315,6 +339,9 @@ class gSpan(object):
             self._subgraph_mining(projected)
             self._DFScode.pop()
 
+        filter_nonmaximal_subgraphs(self._frequent_subgraphs, self._projected_frequent_subgraphs)
+        return
+
     def _get_support(self, projected):
         return len(set([pdfs.gid for pdfs in projected]))
 
@@ -325,6 +352,7 @@ class gSpan(object):
 
     def _report(self, projected):
         self._frequent_subgraphs.append(copy.copy(self._DFScode))
+        self._projected_frequent_subgraphs.append(projected)
         if self._DFScode.get_num_vertices() < self._min_num_vertices:
             return
         g = self._DFScode.to_graph(gid=next(self._counter),

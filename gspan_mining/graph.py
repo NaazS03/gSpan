@@ -36,6 +36,9 @@ class Edge(object):
         self.to = to
         self.elb = elb
 
+    def __hash__(self):
+        return hash(hash(self.eid) + hash(self.frm) + hash(self.to) + hash(self.elb))
+
     def __eq__(self, other):
         """Check equivalence of Edges."""
         if(self is other):

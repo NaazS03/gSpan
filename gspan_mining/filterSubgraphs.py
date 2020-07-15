@@ -1,4 +1,5 @@
 import copy
+
 def filter_nonmaximal_subgraphs(frequent_subgraphs_original, projected_frequent_subgraphs_original):
     frequent_subgraphs = copy.deepcopy(frequent_subgraphs_original)
     projected_frequent_subgraphs = copy.deepcopy(projected_frequent_subgraphs_original)
@@ -15,6 +16,8 @@ def filter_nonmaximal_subgraphs(frequent_subgraphs_original, projected_frequent_
     filter_subgraph_buckets(frequent_subgraphs_with_projections_split_by_size)
 
     print_subgraph_buckets(frequent_subgraphs_with_projections_split_by_size)
+
+    return frequent_subgraphs_with_projections_split_by_size
 
 def find_min_and_max_size_subgraph(subgraphs):
     min_subgraph_size = subgraphs[0].get_num_vertices()
@@ -79,6 +82,11 @@ def filter_nonmaximal_subgraphs_from_same_bucket(bucket_of_subgraphs_with_projec
         # subgraph1 = subgraph_and_projection_1[0] - not used
         projected1 = subgraph_and_projection_1[1]
         support1 = gSpan._get_support(None, projected1)
+        list_of_edges_1 = []
+        current_projection_1 = copy.deepcopy(projected1[0])
+        while(current_projection_1 is not None):
+            list_of_edges_1.append(current_projection_1.edge)
+            current_projection_1 = current_projection_1.prev
 
         for subgraph_and_projection_index_other in range(subgraph_and_projection_index+1,len(bucket_of_subgraphs_with_projections)):
             #Check if we are trying to use and subgraphs that were already scheduled to be removed
@@ -107,20 +115,45 @@ def filter_nonmaximal_subgraphs_from_same_bucket(bucket_of_subgraphs_with_projec
                     if (projected1[projected_index].gid != projected2[projected_index].gid):
                         continue
 
+                list_of_edges_2 = []
+                current_projection_2 = copy.deepcopy(projected2[0])
+                while (current_projection_2 is not None):
+                    list_of_edges_2.append(current_projection_2.edge)
+                    current_projection_2 = current_projection_2.prev
+
+                tail_less_copy_of_proj_1_pdfs = create_tail_less_deep_copy_of_projection_pdfs(projected1)
+                tail_less_copy_of_proj_2_pdfs = create_tail_less_deep_copy_of_projection_pdfs(projected2)
                 # If the projection of subgraph1 minus the head edge or minus the tail edge is equal to all of the projection of subgraph2
                 # then subgraph2 is a subset of subgraph1
-                tail_less_copy_of_proj_1_pdfs = create_tail_less_deep_copy_of_projection_pdfs(projected1)
                 if (projected2[0] == projected1[0].prev or projected2[0] == tail_less_copy_of_proj_1_pdfs):
                     if(subgraph_and_projection_index_other not in subgraph_indices_to_remove):
                         subgraph_indices_to_remove.append(subgraph_and_projection_index_other)
 
                 # If the projection of subgraph2 minus the head edge or tail edge is equal to all of the projection of subgraph1
                 # then subgraph1 is a subset of subgraph2
-                tail_less_copy_of_proj_2_pdfs = create_tail_less_deep_copy_of_projection_pdfs(projected2)
-                if (projected1[0] == projected2[0].prev or projected1[0] == tail_less_copy_of_proj_2_pdfs):
+                elif (projected1[0] == projected2[0].prev or projected1[0] == tail_less_copy_of_proj_2_pdfs):
                     if(subgraph_and_projection_index not in subgraph_indices_to_remove):
                         subgraph_indices_to_remove.append(subgraph_and_projection_index)
 
+                else:
+                    if len(list_of_edges_1) >= len(list_of_edges_2):
+                        proj_2_is_subset = True
+                        for edge in list_of_edges_2:
+                            if edge not in list_of_edges_1:
+                                proj_2_is_subset = False
+                                break
+                        if(proj_2_is_subset):
+                            subgraph_indices_to_remove.append(subgraph_and_projection_index_other)
+                    else:
+                        proj_1_is_subset = True
+                        for edge in list_of_edges_1:
+                            if edge not in list_of_edges_2:
+                                proj_1_is_subset = False
+                                break
+                        if(proj_1_is_subset):
+                            subgraph_indices_to_remove.append(subgraph_and_projection_index)
+    #Finally remove all the indices that were marked for deletion by the algroithm above
+    #index deletion is done at the end to simplify index management
     for index in reversed(subgraph_indices_to_remove):
         del bucket_of_subgraphs_with_projections[index]
     return bucket_of_subgraphs_with_projections
@@ -185,4 +218,5 @@ def print_subgraph_buckets(frequent_subgraphs_with_projections_split_by_size):
             print("Subgraphs of Size: " + str(len(bucket[0][0])))
 
             for subgraph in bucket:
-                print(subgraph[0])
+                print(type(subgraph[0]))
+                print((subgraph[0]))

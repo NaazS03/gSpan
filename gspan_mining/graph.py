@@ -42,11 +42,11 @@ class Edge(object):
             return True
         else:
             eidMatch = self.eid == other.eid
-            frmMatch = self.frm == other.frm
-            toMatch = self.to == other.to
             elbMatch = self.elb == other.elb
+            toFrmMatch = (self.frm == other.frm) and (self.to == other.to)
+            toFrmReverseMatch = (self.frm == other.to) and (self.to == other.frm) #this should be set to always false if the graph is not undirected
 
-            return eidMatch and frmMatch and toMatch and elbMatch
+            return eidMatch and elbMatch and (toFrmMatch or toFrmReverseMatch)
 
     def __ne__(self, other):
         """Check if not equal."""

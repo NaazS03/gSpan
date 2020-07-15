@@ -33,7 +33,7 @@ def main(FLAGS=None):
         where=FLAGS.where
     )
 
-    gs.run()
+    test = gs.run()
     gs.time_stats()
     return gs
 

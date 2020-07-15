@@ -241,6 +241,7 @@ class gSpan(object):
                   'Set max_num_vertices = min_num_vertices.')
             self._max_num_vertices = self._min_num_vertices
         self._report_df = pd.DataFrame()
+        self._max_subgraphs = None
 
     def time_stats(self):
         """Print stats of time."""
@@ -339,8 +340,7 @@ class gSpan(object):
             self._subgraph_mining(projected)
             self._DFScode.pop()
 
-        filter_nonmaximal_subgraphs(self._frequent_subgraphs, self._projected_frequent_subgraphs)
-        return
+        self._max_subgraphs = filter_nonmaximal_subgraphs(self._frequent_subgraphs, self._projected_frequent_subgraphs)
 
     def _get_support(self, projected):
         return len(set([pdfs.gid for pdfs in projected]))

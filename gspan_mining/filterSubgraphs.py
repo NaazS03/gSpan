@@ -76,6 +76,7 @@ def filter_subgraph_buckets(frequent_subgraphs_with_projections_split_by_size):
 def filter_nonmaximal_subgraphs_from_same_bucket(bucket_of_subgraphs_with_projections):
     from gspan import gSpan
     subgraph_indices_to_remove = []
+    subgraphs_and_projections_to_remove = []
     # Check if the subgraph has a super version in the same bucket
     for subgraph_and_projection_index in range(0, len(bucket_of_subgraphs_with_projections)):
         subgraph_and_projection_1 = bucket_of_subgraphs_with_projections[subgraph_and_projection_index]
@@ -121,6 +122,7 @@ def filter_nonmaximal_subgraphs_from_same_bucket(bucket_of_subgraphs_with_projec
                             break
                     if (proj_2_is_subset):
                         subgraph_indices_to_remove.append(subgraph_and_projection_index_other)
+                        subgraphs_and_projections_to_remove.append(subgraph_and_projection_2)
                 else:
                     proj_1_is_subset = True
                     for edge in set_of_edges_1:
@@ -129,11 +131,16 @@ def filter_nonmaximal_subgraphs_from_same_bucket(bucket_of_subgraphs_with_projec
                             break
                     if (proj_1_is_subset):
                         subgraph_indices_to_remove.append(subgraph_and_projection_index)
+                        subgraphs_and_projections_to_remove.append(subgraph_and_projection_1)
 
-    #Finally remove all the indices that were marked for deletion by the algroithm above
+    #Finally keep only the indices that were not marked for deletion
     #index deletion is done at the end to simplify index management
-    for index in reversed(subgraph_indices_to_remove):
-        del bucket_of_subgraphs_with_projections[index]
+    subgraphs_with_projections_to_keep = []
+    for index in range(0, len(bucket_of_subgraphs_with_projections)):
+        if index not in subgraph_indices_to_remove:
+            subgraphs_with_projections_to_keep.append(bucket_of_subgraphs_with_projections[index])
+
+    bucket_of_subgraphs_with_projections = subgraphs_with_projections_to_keep
     return bucket_of_subgraphs_with_projections
 
 def filter_nonmaximal_subgraphs_from_the_bucket_one_bigger(bucket_of_subgraphs_with_projections, bucket_one_bigger_of_subgraphs_with_projections):

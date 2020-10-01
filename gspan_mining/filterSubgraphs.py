@@ -1,6 +1,8 @@
 import copy
 
 def filter_nonmaximal_subgraphs(frequent_subgraphs_original, projected_frequent_subgraphs_original):
+    print("The total number of graphs found were: {}".format(len(frequent_subgraphs_original)))
+
     frequent_subgraphs = copy.deepcopy(frequent_subgraphs_original)
     projected_frequent_subgraphs = copy.deepcopy(projected_frequent_subgraphs_original)
     #Get the size of the min and max subgraphs
@@ -109,7 +111,9 @@ def filter_nonmaximal_subgraphs_from_same_bucket(bucket_of_subgraphs_with_projec
                 for projected_index in range(0, len(projected1)):
                     # If the graph id of each pdfs in projected1 does not match the corresponding pdfs in projected2
                     # then one of the subgraphs is not a subset of the other graph and we can move on with our inner loop
-                    if (projected1[projected_index].gid != projected2[projected_index].gid):
+                    if projected_index >= len(projected1) or projected_index >= len(projected2):
+                        continue
+                    elif projected1[projected_index].gid != projected2[projected_index].gid:
                         continue
 
                 set_of_edges_2 = get_set_of_edges_from_pdfs(projected2[0])
@@ -175,7 +179,9 @@ def filter_nonmaximal_subgraphs_from_the_bucket_one_bigger(bucket_of_subgraphs_w
                 for projected_index in range(0, len(projected1)):
                     # If the graph id of each pdfs in projected1 does not match the corresponding pdfs in projected2
                     # then one of the subgraphs is not a subset of the other graph and we can move on with our inner loop
-                    if (projected1[projected_index].gid != projected2[projected_index].gid):
+                    if projected_index >= len(projected1) or projected_index >= len(projected2):
+                        continue
+                    elif projected1[projected_index].gid != projected2[projected_index].gid:
                         continue
 
                 proj_1_is_subset = True
@@ -200,10 +206,13 @@ def get_set_of_edges_from_pdfs(pdfs):
     return set_of_edges
 
 def print_subgraph_buckets(frequent_subgraphs_with_projections_split_by_size):
+    total_closed_graphs_found = 0
     for bucket in frequent_subgraphs_with_projections_split_by_size:
         if(len(bucket) > 0):
-            print("Subgraphs of Size: " + str(len(bucket[0][0])))
+            # print("Subgraphs of Size: " + str(len(bucket[0][0])))
+            total_closed_graphs_found += len(bucket)
 
-            for subgraph in bucket:
-                print(type(subgraph[0]))
-                print((subgraph[0]))
+            # for subgraph in bucket:
+                # print((subgraph[0])) <--- uncomment if you want to see all closed graphs
+
+    print("The total number of closed graphs found were: {}".format(total_closed_graphs_found))

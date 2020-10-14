@@ -9,7 +9,7 @@ This program supports undirected graphs
 
 ### How to install
 
-This program supports both **Python 2** and **Python 3**.
+This program supports **Python 3**.
 
 ##### Method 1
 

@@ -6,9 +6,9 @@ line_colors = ['red', 'blue', 'green']
 
 # Data - with 3% test case
 x = [7,8,9,10]
-y_ovr_runtime =  [31503.94,4879.09,3364.68,2698.77]
-y_gspan_runtime = [1144.42,400.75,349.33,313.91]
-y_filter_runtime = [30359.39,4478.21,3015.07,2384.64]
+y_ovr_runtime =  [10026.08,1595.9,912.89,799.57]
+y_gspan_runtime = [1173.7,416.23,299.21,306.84]
+y_filter_runtime = [8852.22,1179.51,613.52,492.55]
 
 line, = plt.plot(x, y_ovr_runtime, line_styles[0], color=line_colors[0])
 lines.append(line)

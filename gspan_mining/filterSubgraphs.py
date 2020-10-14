@@ -1,10 +1,11 @@
 import copy
 
-def filter_nonmaximal_subgraphs(frequent_subgraphs_original, projected_frequent_subgraphs_original):
-    print("The total number of graphs found were: {}".format(len(frequent_subgraphs_original)))
+def filter_nonmaximal_subgraphs(frequent_subgraphs, projected_frequent_subgraphs):#(frequent_subgraphs_original, projected_frequent_subgraphs_original):
+    # print("The total number of graphs found were: {}".format(len(frequent_subgraphs_original)))
+    print("The total number of graphs found were: {}".format(len(frequent_subgraphs)))
 
-    frequent_subgraphs = copy.deepcopy(frequent_subgraphs_original)
-    projected_frequent_subgraphs = copy.deepcopy(projected_frequent_subgraphs_original)
+    # frequent_subgraphs = copy.deepcopy(frequent_subgraphs_original)
+    # projected_frequent_subgraphs = copy.deepcopy(projected_frequent_subgraphs_original)
     #Get the size of the min and max subgraphs
     (min_subgraph_size, max_subgraph_size) = find_min_and_max_size_subgraph(frequent_subgraphs)
 
@@ -198,7 +199,7 @@ def filter_nonmaximal_subgraphs_from_the_bucket_one_bigger(bucket_of_subgraphs_w
 
 def get_set_of_edges_from_pdfs(pdfs):
     set_of_edges = set()
-    current_projection = copy.deepcopy(pdfs)
+    current_projection = pdfs #copy.deepcopy(pdfs)
     while (current_projection is not None):
         set_of_edges.add(current_projection.edge)
         current_projection = current_projection.prev

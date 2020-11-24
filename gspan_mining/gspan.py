@@ -325,7 +325,7 @@ class gSpan(object):
             self._counter = itertools.count()
 
     @record_timestamp
-    @profile
+    # @profile # Uncomment if memory profiler is desired
     def run(self):
         """Run the gSpan algorithm."""
         self._read_graphs()

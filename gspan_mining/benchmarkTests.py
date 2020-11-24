@@ -1,4 +1,5 @@
 import unittest
+import itertools
 from gspan import gSpan
 
 class CompoundBenchmarkTests(unittest.TestCase):
@@ -234,6 +235,58 @@ class CompoundBenchmarkTests(unittest.TestCase):
 
 class ChemicalBenchmarkTests(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(self) -> None:
+        self.f = open("benchmarkNaiveOutput.txt", "w")
+
+    @classmethod
+    def tearDownClass(self) -> None:
+        self.f.close()
+
+    def get_info(self, max_subgraphs):
+        # max_subgraphs[-1] gets the largest bin of frequent subgraphs
+        # max_subgraphs[1][0] gets the tuple of DFS code and projection of the largest frequent subgraph
+        # max_subgraphs[-1][0][0] gets the DFS code of the largest frequent subgraph
+
+        largest_bin = max_subgraphs[-1]
+        dfscode_and_projection = largest_bin[0]
+        dfs_code = dfscode_and_projection[0]
+        projection = dfscode_and_projection[1]
+        counter = itertools.count()
+        g = dfs_code.to_graph(gid=next(counter), is_undirected=True)
+
+        return dfs_code, projection, g
+
+    def get_single_result(self, gs, max_subgraphs):
+        dfs_code, projection, g = self.get_info(max_subgraphs=max_subgraphs)
+
+        support = str(gs._get_support(projection))
+        description = g.display()
+        num_vert = str(dfs_code.get_num_vertices())
+        result_1 = (support, description, num_vert)
+
+        results = [result_1]
+        return results
+
+    def get_multiple_results(self, gs, max_subgraphs):
+        results = []
+        for bin in max_subgraphs:
+            for dfscode_and_projection in bin:
+                dfs_code = dfscode_and_projection[0]
+                projection = dfscode_and_projection[1]
+                counter = itertools.count()
+                g = dfs_code.to_graph(gid=next(counter), is_undirected=True)
+
+                support = str(gs._get_support(projection))
+                description = g.display()
+                num_vert = str(dfs_code.get_num_vertices())
+                result = (support, description, num_vert)
+                results.append(result)
+        return results
+
+    def updateOutput(self, results):
+        self.f.write(str(sorted(results)) + "\n")
+
     def test_chemical_min_graph_size_2_support_3_percent(self):
         graph_dataset_size = 340
 
@@ -346,6 +399,24 @@ class ChemicalBenchmarkTests(unittest.TestCase):
         gs.run()
         gs.time_stats()
     #End of min support tests
+
+    def test_chemical_min_graph_size_2(self):
+        graph_dataset_size = 340
+
+        file_name = "../graphdata/benchmark_tests/Chemical_340.txt"
+        supp = graph_dataset_size * 0.45
+        min_size_graph = 2
+        gs = gSpan(
+            database_file_name=file_name,
+            min_support=supp,
+            min_num_vertices=min_size_graph
+        )
+        gs.run()
+        gs.time_stats()
+
+        max_subgraphs = gs._max_subgraphs
+        results = self.get_multiple_results(gs,max_subgraphs)
+        self.updateOutput(results)
 
     #Start of min graph size tests
     def test_chemical_min_graph_size_7_support_5_percent(self):
